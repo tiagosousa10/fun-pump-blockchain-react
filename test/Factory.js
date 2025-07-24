@@ -49,5 +49,27 @@ describe("Factory", function () {
       const { factory, token } = await loadFixture(deployFactoryFixture);
       expect(await token.owner()).to.equal(await factory.getAddress());
     });
+
+    it("Should set the creator", async function () {
+      const { creator, token } = await loadFixture(deployFactoryFixture);
+      expect(await token.creator()).to.equal(creator.address);
+    });
+
+    it("Should set the supply", async function () {
+      const { factory, token } = await loadFixture(deployFactoryFixture);
+      const totalSupply = ethers.parseUnits("1000000", 18);
+
+      expect(await token.balanceOf(await factory.getAddress())).to.equal(
+        totalSupply
+      );
+    });
+
+    it("Should update ETH balance", async function () {
+      const { factory } = await loadFixture(deployFactoryFixture);
+      const balance = await ethers.provider.getBalance(
+        await factory.getAddress()
+      );
+      expect(balance).to.equal(FEE);
+    });
   });
 });
