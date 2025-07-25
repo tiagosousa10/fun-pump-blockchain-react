@@ -26,6 +26,12 @@ contract Factory {
         owner = msg.sender;
     }
 
+    function getTokenSale(
+        uint256 _index
+    ) public view returns (TokenSale memory) {
+        return tokenToSale[tokens[_index]];
+    }
+
     function create(
         string memory _name,
         string memory _symbol
