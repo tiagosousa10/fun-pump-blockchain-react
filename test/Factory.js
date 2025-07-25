@@ -8,26 +8,25 @@ describe("Factory", function () {
   const FEE = ethers.parseUnits("0.01", 18);
 
   async function deployFactoryFixture() {
-    //fetch the accounts
-    const [deployer, creator] = await ethers.getSigners();
-    //fetch the contract
-    const Factory = await ethers.getContractFactory("Factory");
-    //deploy the contract
+    // Get accounts
+    const [deployer, creator, buyer] = await ethers.getSigners();
 
+    // Deploy factory
+    const Factory = await ethers.getContractFactory("Factory");
     const factory = await Factory.deploy(FEE);
 
-    //create token
+    // Create token
     const transaction = await factory
       .connect(creator)
-      .create("Dapp Uni", "DAPP", { value: FEE });
-
+      .create("DAPP Uni", "DAPP", { value: FEE });
     await transaction.wait();
 
-    //get token address
+    // Get token address
     const tokenAddress = await factory.tokens(0);
     const token = await ethers.getContractAt("Token", tokenAddress);
 
-    return { factory, deployer, creator, token };
+    // Return values
+    return { factory, token, deployer, creator, buyer };
   }
 
   describe("Deployment", function () {
@@ -81,11 +80,12 @@ describe("Factory", function () {
       expect(count).to.equal(1);
 
       const sale = await factory.getTokenSale(0);
-      expect(sale.token).to.equal(token.address);
+
+      expect(sale.token).to.equal(await token.getAddress());
       expect(sale.creator).to.equal(creator.address);
       expect(sale.sold).to.equal(0);
       expect(sale.raised).to.equal(0);
-      expect(sale.active).to.equal(true);
+      expect(sale.isOpen).to.equal(true);
     });
   });
 });
