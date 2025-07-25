@@ -10,6 +10,17 @@ contract Factory {
     uint256 public totalTokens;
     address[] public tokens;
 
+    mapping(address => TokenSale) public tokenToSale; //
+
+    struct TokenSale {
+        address token;
+        string name;
+        address creator;
+        uint256 sold;
+        uint256 raised;
+        bool isOpen;
+    }
+
     constructor(uint256 _fee) {
         fee = _fee;
         owner = msg.sender;
@@ -26,6 +37,17 @@ contract Factory {
 
         totalTokens++;
         //list the tooken for sale
+        TokenSale memory sale = TokenSale(
+            address(token),
+            _name,
+            msg.sender,
+            0,
+            0,
+            true
+        );
+
+        tokenToSale[address(token)] = sale;
+
         //tell people to buy
     }
 }
