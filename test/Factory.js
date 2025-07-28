@@ -29,6 +29,21 @@ describe("Factory", function () {
     return { factory, token, deployer, creator, buyer };
   }
 
+  async function buyTokenFixture() {
+    const { factory, token, creator, buyer } = await deployFactoryFixture();
+
+    const AMOUNT = ethers.parseUnits("10000", 18);
+    const COST = ethers.parseUnits("1", 18);
+
+    // Buy tokens
+    const transaction = await factory
+      .connect(buyer)
+      .buy(await token.getAddress(), AMOUNT, { value: COST });
+    await transaction.wait();
+
+    return { factory, token, creator, buyer };
+  }
+
   describe("Deployment", function () {
     it("Should set the fee", async function () {
       const { factory } = await loadFixture(deployFactoryFixture);
@@ -87,5 +102,23 @@ describe("Factory", function () {
       expect(sale.raised).to.equal(0);
       expect(sale.isOpen).to.equal(true);
     });
+  });
+
+  describe("Buying", function () {
+    const AMOUNT = ethers.parseUnits("10000", 18);
+    const COST = ethers.parseUnits("1", 18);
+
+    it("Should update ETH balance", async function () {
+      const { factory } = await loadFixture(buyTokenFixture);
+
+      const balance = await ethers.provider.getBalance(
+        await factory.getAddress()
+      );
+
+      // Remember the fee to initially create the token + someone who bought
+      expect(balance).to.equal(FEE + COST);
+    });
+
+    //check that buyer received token
   });
 });
