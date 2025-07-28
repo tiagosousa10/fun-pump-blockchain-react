@@ -22,6 +22,7 @@ contract Factory {
     }
 
     event Created(address indexed token);
+    event Buy(address indexed token, uint256 amount);
 
     constructor(uint256 _fee) {
         fee = _fee;
@@ -32,6 +33,15 @@ contract Factory {
         uint256 _index
     ) public view returns (TokenSale memory) {
         return tokenToSale[tokens[_index]];
+    }
+
+    function getCost(uint256 _sold) public view returns (uint256) {
+        uint256 floor = 0.0001 ether;
+        uint256 step = 0.0001 ether;
+        uint256 increment = 10000 ether;
+
+        uint cost = (step * (_sold / increment)) + floor;
+        return cost;
     }
 
     function create(
@@ -64,6 +74,25 @@ contract Factory {
     }
 
     function buy(address _token, uint256 _amount) external payable {
+        TokenSale storage sale = tokenToSale[_token]; // extract the sale from the mapping by address of the token we want to buy
+
+        //check conditions
+
+        //calculate the price of 1 token based upon total bought
+        uint256 cost = getCost(sale.sold);
+        uint256 price = cost * (_amount / 10 ** 18);
+
+        //make sure enough ether is sent
+
+        //update the sale
+        sale.sold = sale.sold + _amount;
+        sale.raised = sale.raised + price;
+
+        //make sure fund raising goal isn't met
+
         Token(_token).transfer(msg.sender, _amount);
+
+        //emit an event
+        emit Buy(_token, _amount);
     }
 }

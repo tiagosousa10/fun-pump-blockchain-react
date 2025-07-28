@@ -120,5 +120,21 @@ describe("Factory", function () {
     });
 
     //check that buyer received token
+    it("Should update token balance", async function () {
+      const { token, buyer } = await loadFixture(buyTokenFixture);
+
+      const balance = await token.balanceOf(buyer.address);
+      expect(balance).to.equal(AMOUNT);
+    });
+
+    it("Should update token sale", async function () {
+      const { factory, token } = await loadFixture(buyTokenFixture);
+
+      const sale = await factory.tokenToSale(await token.getAddress());
+
+      expect(sale.sold).to.equal(AMOUNT);
+      expect(sale.raised).to.equal(COST);
+      expect(sale.isOpen).to.equal(true);
+    });
   });
 });
