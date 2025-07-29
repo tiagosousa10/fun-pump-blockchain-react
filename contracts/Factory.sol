@@ -77,12 +77,16 @@ contract Factory {
         TokenSale storage sale = tokenToSale[_token]; // extract the sale from the mapping by address of the token we want to buy
 
         //check conditions
+        require(sale.isOpen == true, "Factory: Sale is closed");
+        require(_amount >= 1 ether, "Factory: Insufficient amount");
+        require(_amount <= 10000 ether, "Factory: Amount too large");
 
         //calculate the price of 1 token based upon total bought
         uint256 cost = getCost(sale.sold);
         uint256 price = cost * (_amount / 10 ** 18);
 
         //make sure enough ether is sent
+        require(msg.value >= price, "Factory: Insufficient funds");
 
         //update the sale
         sale.sold = sale.sold + _amount;
