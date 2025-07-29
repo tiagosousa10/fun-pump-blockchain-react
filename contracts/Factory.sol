@@ -4,6 +4,9 @@ pragma solidity 0.8.27;
 import {Token} from "./Token.sol";
 
 contract Factory {
+    uint256 public constant TARGET = 3 ether;
+    uint256 public constant TOKEN_LIMIT = 500_000 ether;
+
     uint256 public immutable fee;
     address public owner;
 
@@ -93,10 +96,28 @@ contract Factory {
         sale.raised = sale.raised + price;
 
         //make sure fund raising goal isn't met
+        if (sale.sold >= TOKEN_LIMIT || sale.raised >= TARGET) {
+            sale.isOpen = false;
+        }
 
         Token(_token).transfer(msg.sender, _amount);
 
         //emit an event
         emit Buy(_token, _amount);
+    }
+
+    function deposit(address _token) external {
+        Token token = Token(_token);
+        TokenSale memory sale = tokenToSale[_token];
+
+        require(sale.isOpen == false, "Factory: Target not reached");
+
+        //transfer tokens
+        token.transfer(sale.creator, token.balanceOf(address(this)));
+
+        //transfer eth raised
+        (bool sucess, ) = payable(sale.creator).call{value: sale.raised}("");
+
+        require(sucess, "Factory: Transfer failed");
     }
 }
