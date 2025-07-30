@@ -163,8 +163,15 @@ describe("Factory", function () {
       await buyTx.wait();
 
       const sale = await factory.tokenToSale(await token.getAddress());
-
       expect(sale.isOpen).to.equal(false);
+
+      const depositTx = await factory
+        .connect(creator)
+        .deposit(await token.getAddress());
+      await depositTx.wait();
+
+      const balance = await token.balanceOf(creator.address);
+      expect(balance).to.equal(ethers.parseUnits("980000", 18));
     });
   });
 });

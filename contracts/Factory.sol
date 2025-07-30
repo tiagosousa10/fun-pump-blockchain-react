@@ -120,4 +120,10 @@ contract Factory {
 
         require(sucess, "Factory: Transfer failed");
     }
+
+    function withdraw(uint256 _amount) external {
+        require(msg.sender == owner, "Factory: Unauthorized");
+        (bool success, ) = payable(owner).call{value: _amount}("");
+        require(success, "Factory: Transfer failed");
+    }
 }
