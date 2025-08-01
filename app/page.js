@@ -17,10 +17,26 @@ import images from "./images.json";
 export default function Home() {
   const [provider, setProvider] = useState(null);
   const [account, setAccount] = useState(null);
+  const [factory, setFactory] = useState(null);
+  const [fee, setFee] = useState(0);
 
   async function loadBlockchainData() {
     const provider = new ethers.BrowserProvider(window.ethereum);
     setProvider(provider);
+
+    const network = await provider.getNetwork();
+    console.log("🚀 ~ loadBlockchainData ~ network:", network);
+
+    // Get the contract
+    const factory = new ethers.Contract(
+      config["31337"].factory.address,
+      Factory,
+      provider
+    );
+    setFactory(factory);
+
+    const fee = await factory.fee();
+    setFee(fee);
   }
 
   useEffect(() => {
