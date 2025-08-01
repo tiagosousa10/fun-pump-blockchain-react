@@ -19,6 +19,7 @@ export default function Home() {
   const [account, setAccount] = useState(null);
   const [factory, setFactory] = useState(null);
   const [fee, setFee] = useState(0);
+  const [tokens, setTokens] = useState([]);
   const [showCreate, setShowCreate] = useState(false);
 
   function toggleCreate() {
@@ -57,7 +58,20 @@ export default function Home() {
 
     for (let i = 0; i < totalTokens; i++) {
       const tokenSale = await factory.getTokenSale(i);
+      const token = {
+        token: tokenSale.token,
+        name: tokenSale.name,
+        creator: tokenSale.creator,
+        sold: tokenSale.sold,
+        raised: tokenSale.raised,
+        isOpen: tokenSale.isOpen,
+        image: images[i],
+      };
+      tokens.push(token);
     }
+
+    setTokens(tokens.reverse()); // Show the latest first
+    console.log("🚀 ~ loadBlockchainData ~ tokens:", tokens);
   }
 
   useEffect(() => {
