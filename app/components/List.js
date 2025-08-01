@@ -10,6 +10,7 @@ function List({ toggleCreate, fee, provider, factory }) {
     const transaction = await factory
       .connect(signer)
       .create(name, ticker, { value: fee });
+    console.log("🚀 ~ listHandler ~ transaction:", transaction);
     await transaction.wait();
 
     toggleCreate();
@@ -17,18 +18,19 @@ function List({ toggleCreate, fee, provider, factory }) {
 
   return (
     <div className="list">
-      <h2>List new token</h2>
+      <h2>list new token</h2>
+
       <div className="list__description">
-        <p>Fee: {ethers.formatUnits(fee)}ETH</p>
+        <p>fee: {ethers.formatUnits(fee, 18)} ETH</p>
       </div>
 
       <form action={listHandler}>
         <input type="text" name="name" placeholder="name" />
         <input type="text" name="ticker" placeholder="ticker" />
-        <input type="submit" value={"[ list ]"} />
+        <input type="submit" value="[ list ]" />
       </form>
 
-      <button className="btn--fancy" onClick={toggleCreate}>
+      <button onClick={toggleCreate} className="btn--fancy">
         [ cancel ]
       </button>
     </div>

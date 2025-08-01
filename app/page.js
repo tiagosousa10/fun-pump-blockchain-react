@@ -26,22 +26,38 @@ export default function Home() {
   }
 
   async function loadBlockchainData() {
+    // Use MetaMask for our connection
     const provider = new ethers.BrowserProvider(window.ethereum);
     setProvider(provider);
 
+    // Get the current network
     const network = await provider.getNetwork();
     console.log("🚀 ~ loadBlockchainData ~ network:", network);
 
-    // Get the contract
+    console.log(config[network.chainId].factory.address);
+    console.log("ABI", Factory);
+
+    // Create reference to Factory contract
     const factory = new ethers.Contract(
-      config["31337"].factory.address,
+      config[network.chainId].factory.address,
       Factory,
       provider
     );
+    console.log("🚀 ~ loadBlockchainData ~ factory:", factory);
     setFactory(factory);
 
+    // Fetch the fee
     const fee = await factory.fee();
+    console.log("🚀 ~ loadBlockchainData ~ fee:", fee);
     setFee(fee);
+
+    const totalTokens = await factory.totalTokens();
+    console.log("🚀 ~ loadBlockchainData ~ totalTokens:", totalTokens);
+    const tokens = [];
+
+    for (let i = 0; i < totalTokens; i++) {
+      const tokenSale = await factory.getTokenSale(i);
+    }
   }
 
   useEffect(() => {

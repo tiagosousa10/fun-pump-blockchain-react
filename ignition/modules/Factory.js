@@ -7,11 +7,12 @@ const { ethers } = require("hardhat");
 const FEE = ethers.parseUnits("0.01", 18);
 
 module.exports = buildModule("FactoryModule", (m) => {
+  // Get parameters
   const fee = m.getParameter("fee", FEE);
 
+  // Define factory
   const factory = m.contract("Factory", [fee]);
 
-  return {
-    factory,
-  };
+  // Return factory
+  return { factory };
 });
