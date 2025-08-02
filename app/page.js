@@ -95,6 +95,23 @@ export default function Home() {
               : "[ start a new token ]"}
           </button>
         </div>
+
+        <div className="listings">
+          <h1>new listings</h1>
+          <div className="tokens">
+            {!account ? (
+              <p>[ please connect wallet ]</p>
+            ) : tokens.length === 0 ? (
+              <p> no tokens listed </p>
+            ) : (
+              tokens.map((token, index) => {
+                return (
+                  <Token toggleTrade={() => {}} token={token} key={index} />
+                );
+              })
+            )}
+          </div>
+        </div>
       </main>
 
       {showCreate && (
